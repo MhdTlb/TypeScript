@@ -1,33 +1,37 @@
 === tests/cases/conformance/types/mapped/recursiveMappedTypes.ts ===
-
 // Recursive mapped types simply appear empty
 
 type Recurse = {
->Recurse : Recurse
+>Recurse : any
 
     [K in keyof Recurse]: Recurse[K]
->K : K
->Recurse : Recurse
->Recurse : Recurse
->K : K
 }
 
 type Recurse1 = {
->Recurse1 : Recurse1
+>Recurse1 : any
 
     [K in keyof Recurse2]: Recurse2[K]
->K : K
->Recurse2 : Recurse2
->Recurse2 : Recurse2
->K : K
 }
 
 type Recurse2 = {
->Recurse2 : Recurse2
+>Recurse2 : any
 
     [K in keyof Recurse1]: Recurse1[K]
->K : K
->Recurse1 : Recurse1
->Recurse1 : Recurse1
->K : K
 }
+
+// Repro from #27881
+
+export type Circular<T> = {[P in keyof T]: Circular<T>};
+>Circular : Circular<T>
+
+type tup = [number, number, number, number];
+>tup : [number, number, number, number]
+
+function foo(arg: Circular<tup>): tup {
+>foo : (arg: [any, any, any, any]) => [number, number, number, number]
+>arg : [any, any, any, any]
+
+  return arg;
+>arg : [any, any, any, any]
+}
+
